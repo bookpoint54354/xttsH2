@@ -134,6 +134,7 @@ if __name__ == "__main__":
         type=str,
         help="Path to the folder with audio files (optional)",
         default="",
+    )
 
     parser.add_argument(
         "--num_epochs",
