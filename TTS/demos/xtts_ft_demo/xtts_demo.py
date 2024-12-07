@@ -129,6 +129,11 @@ if __name__ == "__main__":
         help="Output path (where data and checkpoints will be saved) Default: /tmp/xtts_ft/",
         default="/tmp/xtts_ft/",
     )
+    parser.add_argument(
+        "--audio_folder_path",
+        type=str,
+        help="Path to the folder with audio files (optional)",
+        default="",
 
     parser.add_argument(
         "--num_epochs",
@@ -172,6 +177,10 @@ if __name__ == "__main__":
                 file_count="multiple",
                 label="Select here the audio files that you want to use for XTTS trainining (Supported formats: wav, mp3, and flac)",
             )
+            audio_folder_path = gr.Textbox(
+                label="Path to the folder with audio files (optional):",
+                value=args.audio_folder_path,
+            )
             lang = gr.Dropdown(
                 label="Dataset Language",
                 value="en",
@@ -204,10 +213,14 @@ if __name__ == "__main__":
 
             prompt_compute_btn = gr.Button(value="Step 1 - Create dataset")
 
-            def preprocess_dataset(audio_path, language, out_path, progress=gr.Progress(track_tqdm=True)):
+            def preprocess_dataset(audio_path, audio_folder_path, language, out_path, progress=gr.Progress(track_tqdm=True)):
                 clear_gpu_cache()
                 out_path = os.path.join(out_path, "dataset")
                 os.makedirs(out_path, exist_ok=True)
+                if audio_folder_path:
+                    audio_path = list(list_audios(audio_folder_path))
+                else:
+                    audio_path = audio_path
                 if audio_path is None:
                     return (
                         "You should provide one or multiple audio files! If you provided it, probably the upload of the files is not finished yet!",
